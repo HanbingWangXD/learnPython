@@ -1,15 +1,21 @@
-from math import cos, radians
+import pyodbc 
+# Some other example server values are
+# server = 'localhost\sqlexpress' # for a named instance
+# server = 'myserver,port' # to specify an alternate port
+server = '(localdb)\\mssqllocaldb' 
+database = 'MinerNetCoreContext-a1444177-fc59-44fd-8ed6-b0d6e8652d1e' 
+Trusted_Connection='yes'
+MultipleActiveResultSets='true'
+cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';Trusted_Connection='+Trusted_Connection+';MultipleActiveResultSets='+ MultipleActiveResultSets)
 
-# Create a string with spaces proportional to a cosine of x in degrees
-def make_dot_string(x):
-    rad = radians(x)                             # cos works with radians
-    numspaces = int(20 * cos(radians(x)) + 20)   # scale to 0-40 spaces
-    st = ' ' * numspaces + 'o'                   # place 'o' after the spaces
-    return st
+cursor = cnxn.cursor()
+cursor.execute("select * from Miner")
+while True:
+    row = cursor.fetchone()
+    if not row:
+        break
+    print('ID:', row.MinerID)          
+    print('IP:', row.IP)
+    print('Location', row.LocationHolder)
 
-def main():
-    for i in range(0, 1800, 12):
-        s = make_dot_string(i)
-        print(s)
 
-main()
